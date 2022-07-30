@@ -14,6 +14,11 @@
         android:theme="@style/Theme.InnowiseDataTransfer"
         tools:targetApi="31">
         <activity
+            android:name=".authentication.view.AuthenticationActivity"
+            android:exported="true"
+            android:label="@string/title_activity_authentication"
+            android:theme="@style/Theme.InnowiseDataTransfer.NoActionBar"/>
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
