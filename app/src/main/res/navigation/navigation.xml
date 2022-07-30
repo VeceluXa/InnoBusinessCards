@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/authLoginFragment"
+        android:name="com.danilovfa.innowisedatatransfer.authentication.view.AuthLoginFragment"
+        android:label="fragment_auth_login"
+        tools:layout="@layout/fragment_auth_login" >
+        <action
+            android:id="@+id/action_authLoginFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_authLoginFragment_to_authRegistrationFragment"
+            app:destination="@id/authRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/authRegistrationFragment"
+        android:name="com.danilovfa.innowisedatatransfer.authentication.view.AuthRegistrationFragment"
+        android:label="fragment_auth_registration"
+        tools:layout="@layout/fragment_auth_registration" >
+        <action
+            android:id="@+id/action_authRegistrationFragment_to_authLoginFragment"
+            app:destination="@id/authLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.danilovfa.innowisedatatransfer.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_authLoginFragment"
+            app:destination="@id/authLoginFragment" />
+    </fragment>
+</navigation>
