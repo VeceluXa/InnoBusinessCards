@@ -55,6 +55,17 @@ class AuthRegistrationFragment : Fragment(), IAuthView {
         authPresenter = AuthPresenter(this)
         auth = Firebase.auth
 
+        buttonRegisterListener()
+
+        return view
+    }
+
+    /**
+     * This function performs registration when button "Register" is pressed.
+     * It checks if email and password are in right format and then performs
+     * Firebase Authentication SignUp. If operation is successful, fragment is closed.
+     */
+    private fun buttonRegisterListener() {
         binding.buttonRegister.setOnClickListener {
             val email = binding.editEmail.text.toString()
 
@@ -77,26 +88,31 @@ class AuthRegistrationFragment : Fragment(), IAuthView {
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                                Toast.makeText(activity, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    activity, "Authentication failed.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
 
                             }
                         }
                 } else {
                     if (!authPresenter.isEmailValid(email))
-                        Toast.makeText(activity, "Wrong email format",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            activity, "Wrong email format",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     else if (!authPresenter.isPasswordValid(password))
-                        Toast.makeText(activity, "Wrong password format",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            activity, "Wrong password format",
+                            Toast.LENGTH_SHORT
+                        ).show()
                 }
 
             } else {
-                Toast.makeText(activity, "Confirmed password is not the same", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Confirmed password is not the same", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
-
-        return view
     }
 
     companion object {
