@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main_graph"
+    app:startDestination="@id/yourCardFragment">
+
+    <fragment
+        android:id="@+id/yourCardFragment"
+        android:name="com.danilovfa.innowisedatatransfer.YourCardFragment"
+        android:label="fragment_your_card"
+        tools:layout="@layout/fragment_your_card" />
+    <fragment
+        android:id="@+id/sharedCardsFragment"
+        android:name="com.danilovfa.innowisedatatransfer.SharedCardsFragment"
+        android:label="fragment_shared_cards"
+        tools:layout="@layout/fragment_shared_cards" />
+    <fragment
+        android:id="@+id/moreFragment"
+        android:name="com.danilovfa.innowisedatatransfer.MoreFragment"
+        android:label="fragment_more"
+        tools:layout="@layout/fragment_more" />
+</navigation>
