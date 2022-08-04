@@ -17,4 +17,7 @@
     <string name="register_button">Register</string>
     <string name="log_in_button">Log in</string>
     <string name="confirm_password_hint">Confirm password</string>
+    <string name="bottom_bar_title_1">Your card</string>
+    <string name="bottom_bar_title_3">More</string>
+    <string name="bottom_bar_title_2">Shared cards</string>
 </resources>
