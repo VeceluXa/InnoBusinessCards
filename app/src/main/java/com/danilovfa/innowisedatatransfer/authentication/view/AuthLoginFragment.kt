@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.danilovfa.innowisedatatransfer.R
 import com.danilovfa.innowisedatatransfer.authentication.presenter.IAuthPresenter
@@ -58,11 +59,22 @@ class AuthLoginFragment : Fragment(), IAuthView {
 
         // Open registration fragment if register button is clicked
         val navController = NavHostFragment.findNavController(this)
-        binding.buttonRegister.setOnClickListener {
-            navController.navigate(R.id.action_authLoginFragment_to_authRegistrationFragment)
-        }
+        buttonRegisterListener(navController)
 
         // Open main fragment
+        buttonLoginListener(navController)
+
+        // Inflate the layout for this fragment
+        return view
+    }
+
+    /**
+     * This functions performs login when button "Login" is pressed
+     * It checks if email and password are in right format, then
+     * performs Firebase Authentication SignIn. If login is successful,
+     * authentication fragment is closed.
+     */
+    private fun buttonLoginListener(navController: NavController) {
         binding.buttonLogin.setOnClickListener {
 
             val email = binding.editEmail.text.toString()
@@ -78,41 +90,35 @@ class AuthLoginFragment : Fragment(), IAuthView {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(ContentValues.TAG, "signInWithEmail:failure", task.exception)
-                            Toast.makeText(activity, "Incorrect email or password",
-                                Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                activity, "Incorrect email or password",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
             } else {
                 if (!authPresenter.isEmailValid(email))
-                    Toast.makeText(activity, "Wrong email format",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        activity, "Wrong email format",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 else if (!authPresenter.isPasswordValid(password))
-                    Toast.makeText(activity, "Wrong password format",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        activity, "Wrong password format",
+                        Toast.LENGTH_SHORT
+                    ).show()
             }
-
-
-
-//            if (loginPresenter.doLogin(requireActivity(), email, password)) {
-//                // Return to main fragment
-//                navController.popBackStack()
-//            } else {
-//                if (!loginPresenter.isEmailValid(email))
-//                    Toast.makeText(activity, "Wrong email format",
-//                        Toast.LENGTH_SHORT).show()
-//                else if (!loginPresenter.isPasswordValid(password))
-//                    Toast.makeText(activity, "Wrong password format",
-//                        Toast.LENGTH_SHORT).show()
-//                else
-//                    Toast.makeText(activity, "Incorrect email or password",
-//                        Toast.LENGTH_SHORT).show()
-//            }
         }
-
-        // Inflate the layout for this fragment
-        return view
     }
 
+    /**
+     * This function opens registration fragment when "Registration" button is pressed
+     */
+    private fun buttonRegisterListener(navController: NavController) {
+        binding.buttonRegister.setOnClickListener {
+            navController.navigate(R.id.action_authLoginFragment_to_authRegistrationFragment)
+        }
+    }
 
 
     companion object {
