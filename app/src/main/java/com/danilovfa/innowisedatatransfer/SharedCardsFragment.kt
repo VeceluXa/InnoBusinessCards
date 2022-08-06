@@ -12,6 +12,9 @@ class SharedCardsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Set title of tool bar
+        (requireActivity() as MainActivity).title = "Shared cards"
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_shared_cards, container, false)
     }

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
+import com.danilovfa.innowisedatatransfer.MainActivity
 import com.danilovfa.innowisedatatransfer.R
 import com.danilovfa.innowisedatatransfer.authentication.presenter.AuthPresenter
 import com.danilovfa.innowisedatatransfer.authentication.presenter.IAuthPresenter
@@ -27,7 +28,9 @@ class AuthRegistrationFragment : Fragment(), IAuthView {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        // Set title of tool bar
+        (requireActivity() as MainActivity).title = "Register"
+
         binding = FragmentAuthRegistrationBinding.inflate(inflater, container, false)
         val view = binding.root
 

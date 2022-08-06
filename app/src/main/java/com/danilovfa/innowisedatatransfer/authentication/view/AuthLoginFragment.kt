@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.danilovfa.innowisedatatransfer.MainActivity
 import com.danilovfa.innowisedatatransfer.R
 import com.danilovfa.innowisedatatransfer.authentication.presenter.IAuthPresenter
 import com.danilovfa.innowisedatatransfer.authentication.presenter.AuthPresenter
@@ -27,6 +28,9 @@ class AuthLoginFragment : Fragment(), IAuthView {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Set title of tool bar
+        (requireActivity() as MainActivity).title = "Login"
+
         binding = FragmentAuthLoginBinding.inflate(inflater, container, false)
         val view = binding.root
 
