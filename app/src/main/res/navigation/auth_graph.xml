@@ -11,8 +11,10 @@
         android:label="fragment_auth_login"
         tools:layout="@layout/fragment_auth_login">
         <action
-            android:id="@+id/action_authLoginFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            android:id="@+id/action_authLoginFragment_to_yourCardFragment"
+            app:destination="@id/yourCardFragment"
+            app:popUpTo="@id/authLoginFragment"
+            app:popUpToInclusive="true"/>
         <action
             android:id="@+id/action_authLoginFragment_to_authRegistrationFragment"
             app:destination="@id/authRegistrationFragment" />

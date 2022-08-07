@@ -1,0 +1,21 @@
+package com.danilovfa.innowisedatatransfer
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+
+class SharedCardsFragment : Fragment() {
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Set title of tool bar
+        (requireActivity() as MainActivity).title = "Shared cards"
+
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_shared_cards, container, false)
+    }
+}
