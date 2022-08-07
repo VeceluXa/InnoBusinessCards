@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import com.danilovfa.innowisedatatransfer.databinding.FragmentMoreBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 
 class MoreFragment : Fragment() {
 
@@ -22,7 +24,8 @@ class MoreFragment : Fragment() {
         val view = binding.root
 
         binding.buttonLogout.setOnClickListener {
-            NavHostFragment.findNavController(this).navigate(R.id.action_mainFragment_to_authLoginFragment)
+            FirebaseAuth.getInstance().signOut()
+            NavHostFragment.findNavController(this).navigate(R.id.action_moreFragment_to_auth_graph)
         }
 
         // Inflate the layout for this fragment

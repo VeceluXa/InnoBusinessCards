@@ -13,6 +13,7 @@ import com.danilovfa.innowisedatatransfer.R
 import com.danilovfa.innowisedatatransfer.authentication.presenter.IAuthPresenter
 import com.danilovfa.innowisedatatransfer.authentication.presenter.AuthPresenter
 import com.danilovfa.innowisedatatransfer.databinding.FragmentAuthLoginBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -28,11 +29,13 @@ class AuthLoginFragment : Fragment(), IAuthView {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding = FragmentAuthLoginBinding.inflate(inflater, container, false)
+        val view = binding.root
+
         // Set title of tool bar
         (requireActivity() as MainActivity).title = "Login"
 
-        binding = FragmentAuthLoginBinding.inflate(inflater, container, false)
-        val view = binding.root
+        hideNavBar()
 
         auth = Firebase.auth
         authPresenter = AuthPresenter(this)
@@ -66,7 +69,7 @@ class AuthLoginFragment : Fragment(), IAuthView {
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(ContentValues.TAG, "signInWithEmail:success")
-                            navController.popBackStack()
+                            navController.navigate(R.id.action_authLoginFragment_to_yourCardFragment)
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(ContentValues.TAG, "signInWithEmail:failure", task.exception)
@@ -98,5 +101,11 @@ class AuthLoginFragment : Fragment(), IAuthView {
         binding.buttonRegister.setOnClickListener {
             navController.navigate(R.id.action_authLoginFragment_to_authRegistrationFragment)
         }
+    }
+
+    private fun hideNavBar() {
+        val activity = requireActivity() as MainActivity
+        val bottomNavigation = activity.findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNavigation.visibility = View.GONE
     }
 }
