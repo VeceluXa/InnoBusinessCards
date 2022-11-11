@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--TODO Add shape to contact view-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/contactType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/common_google_signin_btn_icon_dark"
+        android:drawablePadding="1dp"
+        android:gravity="center|start"
+        android:padding="5dp"
+        android:text="Contact:"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/contactInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center|start"
+        android:padding="5dp"
+        android:text="Info"
+        android:textSize="18sp" />
+</LinearLayout>
