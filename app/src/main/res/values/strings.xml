@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">InnoBusinessCards</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_authentication">AuthenticationActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -20,4 +17,5 @@
     <string name="bottom_bar_title_1">Your card</string>
     <string name="bottom_bar_title_3">More</string>
     <string name="bottom_bar_title_2">Shared cards</string>
+    <string name="avatar">Avatar</string>
 </resources>
