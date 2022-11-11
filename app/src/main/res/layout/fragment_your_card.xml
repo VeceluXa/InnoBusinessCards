@@ -1,21 +1,281 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
     </data>
 
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".YourCardFragment">
+        android:layout_height="match_parent">
 
-        <!-- TODO: Update blank fragment layout -->
-        <TextView
+<!-- TODO make avatar shapes (round, rounded corners, square) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Your card fragment" />
+            android:layout_height="wrap_content">
 
-    </FrameLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/cardAvatar"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="16dp"
+                android:contentDescription="@string/avatar"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/Avatar.Rounded"
+                tools:srcCompat="@drawable/avatar_default" />
+
+            <EditText
+                android:id="@+id/cardName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:background="@android:color/transparent"
+                android:ems="10"
+                android:gravity="center"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:text="Name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardAvatar" />
+
+            <EditText
+                android:id="@+id/cardDescription"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/layout_background_rounded"
+                android:elevation="4dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:isScrollContainer="false"
+                android:outlineProvider="bounds"
+                android:padding="5dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:scrollHorizontally="false"
+                android:singleLine="false"
+                android:text="Description"
+                android:textColor="?colorOnSecondaryContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardName" />
+
+            <LinearLayout
+                android:id="@+id/contactsLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardDescription"
+                android:background="@drawable/layout_background_rounded"
+                android:padding="10dp">
+
+                <LinearLayout
+                    android:id="@+id/contactAddressContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/view_background_rounded"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/contactAddressLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_contact_address"
+                        android:drawablePadding="5dp"
+                        android:gravity="center|start"
+                        android:padding="5dp"
+                        android:text="Address:"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/contactAddressText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center|start"
+                        android:padding="5dp"
+                        android:text="Info"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/contactPhoneContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/view_background_rounded"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/contactPhoneLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_contact_phone"
+                        android:drawablePadding="5dp"
+                        android:gravity="center|start"
+                        android:padding="5dp"
+                        android:text="Phone:"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/contactPhoneText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center|start"
+                        android:padding="5dp"
+                        android:text="Info"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/contactEmailContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/view_background_rounded"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/contactEmailLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_contact_email"
+                        android:drawablePadding="5dp"
+                        android:gravity="center|start"
+                        android:padding="5dp"
+                        android:text="Email:"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/contactEmailText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center|start"
+                        android:padding="5dp"
+                        android:text="Info"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TableLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/layout_background_rounded"
+                android:padding="10dp"
+                android:stretchColumns="*"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contactsLayout">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/socialView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/view_background_rounded"
+                        android:drawableLeft="@drawable/ic_social_twitter"
+                        android:drawablePadding="10dp"
+                        android:gravity="start|center"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="Twitter"
+                        android:textAllCaps="false"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/socialView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/view_background_rounded"
+                        android:drawableLeft="@drawable/ic_social_reddit"
+                        android:drawablePadding="10dp"
+                        android:gravity="start|center"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="Reddit"
+                        android:textAllCaps="false"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/socialView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/view_background_rounded"
+                        android:drawableLeft="@drawable/ic_social_linkedin"
+                        android:drawablePadding="10dp"
+                        android:gravity="start|center"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="LinkedIn"
+                        android:textAllCaps="false"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/socialView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/view_background_rounded"
+                        android:drawableLeft="@drawable/ic_social_github"
+                        android:drawablePadding="10dp"
+                        android:gravity="start|center"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="GitHub"
+                        android:textAllCaps="false"
+                        android:textColor="?colorOnSecondary"
+                        android:textSize="18sp" />
+                </TableRow>
+            </TableLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>
