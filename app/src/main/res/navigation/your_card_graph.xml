@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/your_card_graph"
     app:startDestination="@id/cardView">
 
     <fragment
         android:id="@+id/cardView"
         android:name="com.danilovfa.innowisedatatransfer.CardView"
-        android:label="CardView" >
+        android:label="CardView"
+        tools:layout="@layout/fragment_card_view">
         <action
             android:id="@+id/action_cardView_to_cardEdit"
             app:destination="@id/cardEdit" />
@@ -15,7 +17,8 @@
     <fragment
         android:id="@+id/cardEdit"
         android:name="com.danilovfa.innowisedatatransfer.CardEdit"
-        android:label="CardEdit" >
+        android:label="CardEdit"
+        tools:layout="@layout/fragment_card_edit">
         <action
             android:id="@+id/action_cardEdit_to_cardView"
             app:destination="@id/cardView" />
