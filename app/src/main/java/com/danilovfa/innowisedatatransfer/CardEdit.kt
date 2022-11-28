@@ -1,32 +1,48 @@
 package com.danilovfa.innowisedatatransfer
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
+import android.widget.*
+import android.widget.AdapterView.OnItemSelectedListener
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.forEach
 import androidx.core.view.get
 import androidx.core.view.size
 import com.danilovfa.innowisedatatransfer.databinding.CardItemEditBinding
 import com.danilovfa.innowisedatatransfer.databinding.FragmentCardEditBinding
 
+const val CONTENT_TAG = "edit-content"
+
 class CardEdit : Fragment() {
     private lateinit var binding: FragmentCardEditBinding
+
+    private val socialsDefault = setOf("Twitter", "GitHub", "LinkedIn", "Reddit", "CV")
+    private var socialsSelected = mutableSetOf<String>()
+
+    private val contactsDefault = setOf("Address", "Phone", "Email")
+    private var contactsSelected = mutableSetOf<String>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         (requireActivity() as MainActivity).title = "Edit your card"
 
         binding = FragmentCardEditBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        addContact()
+        // Add first item to container and set up add button listener
+        addItem(binding.contactsContainer)
         onAddContact()
-        addSocial()
+        addItem(binding.socialsContainer)
         onAddSocial()
+
+        onChangeItem(binding.contactsContainer)
+        onChangeItem(binding.socialsContainer)
 
         // Inflate the layout for this fragment
         return view
@@ -34,71 +50,192 @@ class CardEdit : Fragment() {
 
     private fun onAddContact() {
         binding.buttonAddContact.setOnClickListener {
-            addContact()
+            addItem(binding.contactsContainer)
         }
-    }
-
-    private fun addContact() {
-        val entries = listOf("Address", "Phone", "Email")
-
-        val view = layoutInflater.inflate(R.layout.card_item_edit, null, false)
-        val rowBinding = CardItemEditBinding.bind(view)
-
-        val arrayAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, entries)
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        rowBinding.spinner.adapter = arrayAdapter
-
-        rowBinding.buttonDelete.setOnClickListener {
-            removeContact(view)
-        }
-
-        if (binding.contactsContainer.size == 2) {
-            binding.buttonAddContact.visibility = View.GONE
-        }
-
-        binding.contactsContainer.addView(view)
-    }
-
-    private fun removeContact(view: View) {
-        binding.contactsContainer.removeView(view)
-        binding.buttonAddContact.visibility = View.VISIBLE
     }
 
     private fun onAddSocial() {
         binding.buttonAddSocial.setOnClickListener {
-            addSocial()
+            addItem(binding.socialsContainer)
         }
     }
 
-    private fun addSocial() {
-        val entries = listOf("Twitter", "GitHub", "LinkedIn", "Reddit")
+    private fun addItem(container: LinearLayout) {
+        // Get sets and button depending on a container
+        val setDefault: Set<String>
+        val setSelected: MutableSet<String>
+        val button: Button
+        when(container.id) {
+            R.id.socialsContainer -> {
+                button = binding.buttonAddSocial
+                setDefault = socialsDefault
+                setSelected = socialsSelected
+            }
+            R.id.contactsContainer -> {
+                button = binding.buttonAddContact
+                setDefault = contactsDefault
+                setSelected = contactsSelected
+            }
+            else -> {
+                // TODO Throw error
+                Log.i(CONTENT_TAG, "addItem: Wrong container!")
+                return
+            }
+        }
+
+        val entries = (setDefault - setSelected).toList()
 
         val view = layoutInflater.inflate(R.layout.card_item_edit, null, false)
         val rowBinding = CardItemEditBinding.bind(view)
 
         val arrayAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, entries)
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         rowBinding.spinner.adapter = arrayAdapter
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
+        // Set up remove item listener on new item
         rowBinding.buttonDelete.setOnClickListener {
-            removeSocial(view)
+            removeItem(view, container, button, setSelected)
         }
 
-        if (binding.socialsContainer.size == 3) {
-            binding.buttonAddSocial.visibility = View.GONE
-        }
+        container.addView(view)
 
-        binding.socialsContainer.addView(view)
+        // TODO Focus on new item
 //        binding.buttonAddSocial.requestFocus(View.FOCUS_DOWN)
-        binding.scrollCard.scrollTo(0, binding.scrollCard.bottom)
+//        binding.scrollCard.scrollTo(0, binding.scrollCard.bottom)
+
+        if (container.size == setDefault.size) {
+            button.visibility = View.GONE
+        }
+
+        when(container.id) {
+            R.id.socialsContainer -> socialsSelected = getEntries(container)
+            R.id.contactsContainer -> contactsSelected = getEntries(container)
+        }
+
+        updateItems(container)
+    }
+
+    /**
+     * For each row in contacts/socials container update spinner adapter and listeners
+     */
+    private fun updateItems(container: LinearLayout) {
+        val set = when (container.id) {
+            R.id.socialsContainer -> {
+                socialsDefault - socialsSelected
+            }
+            R.id.contactsContainer -> {
+                contactsDefault - contactsSelected
+            }
+            else -> {
+                Log.i(CONTENT_TAG, "updateItems: wrong container is passed")
+                return
+            }
+        }
+
+        container.forEach {
+            // Get views
+            val layout = it as ConstraintLayout
+            val spinner = (layout[0] as FrameLayout)[0] as Spinner
+
+            // Update listener
+            onChangeItem(container)
+
+            // Update spinner adapter
+            val entries = set.toMutableList()
+            entries.add(0, spinner.selectedItem.toString())
+            val arrayAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, entries)
+            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = arrayAdapter
+        }
+    }
+
+    /**
+     * Remove item from contact/social container.
+     * view - item to remove
+     * container - container where item is located (binding.contactContainer or binding.socialContainer)
+     * buttonAdd - button to add new item
+     * entriesSelected - set of selected entries in container
+     */
+    private fun removeItem(view: View, container: LinearLayout, buttonAdd: Button, entriesSelected: MutableSet<String>) {
+        // Remove selected item from entriesSelected
+        val layout = view as ConstraintLayout
+        val spinner = (layout[0] as FrameLayout)[0] as Spinner
+
+        entriesSelected.remove(spinner.selectedItem.toString())
+        updateItems(container)
+
+        // Remove view
+        container.removeView(view)
+        buttonAdd.visibility = View.VISIBLE
+    }
+
+    /**
+     * Update spinners when any of container's spinner is selected
+     */
+    private fun onChangeItem(container: LinearLayout) {
+        container.forEach {
+            val layout = it as ConstraintLayout
+            val spinner = (layout[0] as FrameLayout)[0] as Spinner
+
+            spinner.onItemSelectedListener = object: OnItemSelectedListener {
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    Log.i(CONTENT_TAG, "onItemSelected: ")
+
+                    when(container.id) {
+                        R.id.socialsContainer -> socialsSelected = getEntries(container)
+                        R.id.contactsContainer -> contactsSelected = getEntries(container)
+                    }
+                    updateItems(container)
+                }
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+            }
+        }
+    }
+
+    /**
+     * Get all content from contact/social container.
+     * Key is a selected item in Spinner
+     * Value is text in EditText
+     */
+    private fun getContent(container: LinearLayout): HashMap<String, String> {
+        val hashMap = hashMapOf<String, String>()
+
+        container.forEach {
+            val layout = it as ConstraintLayout
+            val spinner = (layout[0] as FrameLayout)[0] as Spinner
+            val editText = layout[1] as EditText
+
+            hashMap[spinner.selectedItem.toString()] = editText.text.toString()
+        }
+
+        Log.i(CONTENT_TAG, "getContent: $hashMap")
+
+        return hashMap
+    }
+
+    /**
+     * Get all entries (selected items in spinners) in container.
+     */
+    private fun getEntries(container: LinearLayout): MutableSet<String> {
+        val setEntries = mutableSetOf<String>()
+
+        container.forEach {
+            val layout = it as ConstraintLayout
+            val spinner = (layout[0] as FrameLayout)[0] as Spinner
+
+            setEntries.add(spinner.selectedItem.toString())
+        }
+
+        Log.i(CONTENT_TAG, "getEntries: $setEntries")
+
+        return setEntries
     }
 
     fun onAvatarClick(view: View) {
 
     }
 
-    private fun removeSocial(view: View) {
-        binding.socialsContainer.removeView(view)
-        binding.buttonAddSocial.visibility = View.VISIBLE
-    }
+
 }
