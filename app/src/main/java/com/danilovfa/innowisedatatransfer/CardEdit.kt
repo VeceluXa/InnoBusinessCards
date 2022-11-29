@@ -1,5 +1,9 @@
 package com.danilovfa.innowisedatatransfer
 
+import android.app.Activity
+import android.content.ContentResolver
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,14 +12,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.get
 import androidx.core.view.size
+import com.bumptech.glide.Glide
 import com.danilovfa.innowisedatatransfer.databinding.CardItemEditBinding
 import com.danilovfa.innowisedatatransfer.databinding.FragmentCardEditBinding
 
 const val CONTENT_TAG = "edit-content"
+const val EDIT_AVATAR = "edit-avatar"
 
 class CardEdit : Fragment() {
     private lateinit var binding: FragmentCardEditBinding
@@ -41,8 +48,16 @@ class CardEdit : Fragment() {
         addItem(binding.socialsContainer)
         onAddSocial()
 
+        // TODO Fix multiple on change listener calls
+        // TODO Save data on orientation change
+
         onChangeItem(binding.contactsContainer)
         onChangeItem(binding.socialsContainer)
+
+        // Load default avatar
+        loadAvatarDefault()
+        // Set up onclick avatar change listener
+        onAvatarClick()
 
         // Inflate the layout for this fragment
         return view
@@ -233,8 +248,44 @@ class CardEdit : Fragment() {
         return setEntries
     }
 
-    fun onAvatarClick(view: View) {
+    /**
+     * Load default avatar and cicle crop it using Glide
+     */
+    private fun loadAvatarDefault() {
+        Glide.with(requireActivity())
+            .load(R.drawable.avatar_default)
+            .circleCrop()
+            .into(binding.cardAvatar)
+    }
 
+    /**
+     * When avatar is clicked run image picker
+     */
+    private fun onAvatarClick() {
+        binding.cardAvatar.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            resultLauncher.launch(intent)
+        }
+    }
+
+    /**
+     * If image pick intent is successful circle crop image and load into avatar
+     */
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+            val data: Intent? = result.data
+            if (data != null) {
+                val imageUri = data.data as Uri
+                Log.i(EDIT_AVATAR, "$imageUri")
+                Glide.with(requireActivity())
+                    .load(imageUri)
+                    .circleCrop()
+                    .placeholder(R.drawable.avatar_default)
+                    .into(binding.cardAvatar);
+            }
+        }
     }
 
 
