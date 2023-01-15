@@ -1,12 +1,14 @@
 package com.danilovfa.innowisedatatransfer
 
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
+import android.text.SpannableStringBuilder
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,15 +19,19 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.get
 import androidx.core.view.size
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.danilovfa.innowisedatatransfer.databinding.CardItemEditBinding
 import com.danilovfa.innowisedatatransfer.databinding.FragmentCardEditBinding
+import java.io.Serializable
 
 const val CONTENT_TAG = "edit-content"
 const val EDIT_AVATAR = "edit-avatar"
 
 class CardEdit : Fragment() {
     private lateinit var binding: FragmentCardEditBinding
+
+    private var avatarUri = Uri.parse("android.resource://com.danilovfa.innowisedatatransfer/drawable/avatar_default.jpg")
 
     private val socialsDefault = setOf("Twitter", "GitHub", "LinkedIn", "Reddit", "CV")
     private var socialsSelected = mutableSetOf<String>()
@@ -42,25 +48,49 @@ class CardEdit : Fragment() {
         binding = FragmentCardEditBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Add first item to container and set up add button listener
-        addItem(binding.contactsContainer)
+        // Inflate the layout for this fragment
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (savedInstanceState != null) {
+            avatarUri = savedInstanceState.parcelable("avatar")
+            val socials = savedInstanceState.serializable<HashMap<String, String>>("socials")
+            val contacts = savedInstanceState.serializable<HashMap<String, String>>("contacts")
+
+            addItems(socials!!, binding.socialsContainer)
+            addItems(contacts!!, binding.contactsContainer)
+
+        } else {
+            addItem(binding.contactsContainer)
+            addItem(binding.socialsContainer)
+        }
+
+        // Setup add item listeners
         onAddContact()
-        addItem(binding.socialsContainer)
         onAddSocial()
 
         // TODO Fix multiple on change listener calls
-        // TODO Save data on orientation change
 
         onChangeItem(binding.contactsContainer)
         onChangeItem(binding.socialsContainer)
 
-        // Load default avatar
-        loadAvatarDefault()
+        // Load avatar
+        loadAvatar()
         // Set up onclick avatar change listener
         onAvatarClick()
+    }
 
-        // Inflate the layout for this fragment
-        return view
+    private inline fun <reified T : Serializable> Bundle.serializable(key: String): T? = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializable(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getSerializable(key) as? T
+    }
+
+    private inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getParcelable(key) as? T
     }
 
     private fun onAddContact() {
@@ -77,26 +107,9 @@ class CardEdit : Fragment() {
 
     private fun addItem(container: LinearLayout) {
         // Get sets and button depending on a container
-        val setDefault: Set<String>
-        val setSelected: MutableSet<String>
-        val button: Button
-        when(container.id) {
-            R.id.socialsContainer -> {
-                button = binding.buttonAddSocial
-                setDefault = socialsDefault
-                setSelected = socialsSelected
-            }
-            R.id.contactsContainer -> {
-                button = binding.buttonAddContact
-                setDefault = contactsDefault
-                setSelected = contactsSelected
-            }
-            else -> {
-                // TODO Throw error
-                Log.i(CONTENT_TAG, "addItem: Wrong container!")
-                return
-            }
-        }
+        val setDefault = getDefault(container)
+        val setSelected = getSelected(container)
+        val button = getButton(container)
 
         val entries = (setDefault - setSelected).toList()
 
@@ -122,30 +135,50 @@ class CardEdit : Fragment() {
             button.visibility = View.GONE
         }
 
-        when(container.id) {
-            R.id.socialsContainer -> socialsSelected = getEntries(container)
-            R.id.contactsContainer -> contactsSelected = getEntries(container)
+        changeSelected(getEntries(container), container)
+        updateItems(container)
+    }
+
+    private fun addItems(items: HashMap<String, String>, container: LinearLayout) {
+        val setDefault = getDefault(container)
+        val setSelected = getSelected(container)
+        var i = 0
+        items.forEach {
+            addItem(container)
+
+            val layout = container[i] as ConstraintLayout
+            val spinner = (layout[0] as FrameLayout)[0] as Spinner
+            val editText = layout[1] as EditText
+
+            val key = it.key
+            val value = it.value
+
+            // Set up adapter
+            val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, setDefault.toList())
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+
+            // Choose right item
+            val position = adapter.getPosition(key)
+            spinner.setSelection(position)
+
+            editText.text = SpannableStringBuilder(value)
+
+            setSelected.add(key)
+            changeSelected(setSelected, container)
+
+            i++
         }
 
-        updateItems(container)
+        // Get sets and button depending on a container
+//        updateItems(container)
     }
 
     /**
      * For each row in contacts/socials container update spinner adapter and listeners
      */
     private fun updateItems(container: LinearLayout) {
-        val set = when (container.id) {
-            R.id.socialsContainer -> {
-                socialsDefault - socialsSelected
-            }
-            R.id.contactsContainer -> {
-                contactsDefault - contactsSelected
-            }
-            else -> {
-                Log.i(CONTENT_TAG, "updateItems: wrong container is passed")
-                return
-            }
-        }
+        val set = getDefault(container) - getSelected(container)
 
         container.forEach {
             // Get views
@@ -196,14 +229,11 @@ class CardEdit : Fragment() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     Log.i(CONTENT_TAG, "onItemSelected: ")
 
-                    when(container.id) {
-                        R.id.socialsContainer -> socialsSelected = getEntries(container)
-                        R.id.contactsContainer -> contactsSelected = getEntries(container)
-                    }
+                    changeSelected(getEntries(container), container)
                     updateItems(container)
                 }
                 override fun onNothingSelected(p0: AdapterView<*>?) {
-                    TODO("Not yet implemented")
+                    return
                 }
             }
         }
@@ -249,16 +279,6 @@ class CardEdit : Fragment() {
     }
 
     /**
-     * Load default avatar and cicle crop it using Glide
-     */
-    private fun loadAvatarDefault() {
-        Glide.with(requireActivity())
-            .load(R.drawable.avatar_default)
-            .circleCrop()
-            .into(binding.cardAvatar)
-    }
-
-    /**
      * When avatar is clicked run image picker
      */
     private fun onAvatarClick() {
@@ -278,15 +298,66 @@ class CardEdit : Fragment() {
             val data: Intent? = result.data
             if (data != null) {
                 val imageUri = data.data as Uri
+                avatarUri = imageUri
                 Log.i(EDIT_AVATAR, "$imageUri")
-                Glide.with(requireActivity())
-                    .load(imageUri)
-                    .circleCrop()
-                    .placeholder(R.drawable.avatar_default)
-                    .into(binding.cardAvatar);
+                loadAvatar()
             }
         }
     }
 
+    private fun loadAvatar() {
+        Glide.with(requireActivity())
+            .load(avatarUri)
+            .circleCrop()
+            .placeholder(R.drawable.avatar_default)
+            .into(binding.cardAvatar);
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putSerializable("socials", getContent(binding.socialsContainer))
+        outState.putSerializable("contacts", getContent(binding.contactsContainer))
+        outState.putParcelable("avatar", avatarUri)
+    }
+
+    private fun getDefault(container: LinearLayout): Set<String> {
+        return when(container.id) {
+            R.id.socialsContainer -> socialsDefault
+            R.id.contactsContainer -> contactsDefault
+            else -> {
+                throw Exception("getDefault: wrong container passed!")
+            }
+        }
+    }
+
+    private fun getSelected(container: LinearLayout): MutableSet<String> {
+        return when(container.id) {
+            R.id.socialsContainer -> socialsSelected
+            R.id.contactsContainer -> contactsSelected
+            else -> {
+                throw Exception("getSelected: wrong container passed!")
+            }
+        }
+    }
+
+    private fun getButton(container: LinearLayout): Button {
+        return when(container.id) {
+            R.id.socialsContainer -> binding.buttonAddSocial
+            R.id.contactsContainer -> binding.buttonAddContact
+            else -> {
+                throw Exception("getButton: wrong container passed!")
+            }
+        }
+    }
+
+    private fun changeSelected(set: MutableSet<String>, container: LinearLayout) {
+        when(container.id) {
+            R.id.socialsContainer -> socialsSelected = set
+            R.id.contactsContainer -> contactsSelected = set
+            else -> {
+                throw Exception("changeSelected: wrong container passed!")
+            }
+        }
+    }
 }
